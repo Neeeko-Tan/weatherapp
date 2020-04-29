@@ -13,9 +13,11 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-
+      cityName: '',
+      current: {},
       forecasts: [],
-      limit: 5
+      limit: 5,
+      searchValue: ''
     }
   }
 
@@ -29,7 +31,7 @@ class App extends React.Component {
       this.setState({ cityName, current, forecasts });
     
     } catch (err) {
-       console.log(err)
+        console.log(err)
     }
 
   }
@@ -47,11 +49,20 @@ class App extends React.Component {
   handleChangeLimit = limit => {
     this.setState({ limit });
   }
+
+  handleSearchValueChange = event => {
+    const value = event.target.value;
+    this.setState({ searchValue: value })
+  }
+
   render(){
     return(
       <div className="weather-channel__container">
         <Header />
-        <Navigation />
+        <Navigation 
+          searchValue={this.state.searchValue}
+          handleSearchValueChange = {this.handleSearchValueChange}
+        />
         <Main 
           cityName={this.state.cityName}
           current={this.state.current}   
