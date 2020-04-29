@@ -1,75 +1,50 @@
 import React from 'react';
-import axios from 'axios';//npm i axios
+//import axios from 'axios';//npm i axios
 import { format } from 'date-fns';//npm i date-fns
 
 import ForecastRow from './forecastRow';
 
 class WeatherForcast extends React.Component {
-    state = {
-        forecasts: [
-            // {
-            //     day: "Fri",
-            //     high: "19 c",
-            //     low: "8 c",
-            //     time: "10:00"
-            // },
-            // {
-            //     day: "Sat",
-            //     high: "19 c",
-            //     low: "8 c",
-            //     time: "10:00"
-            // },
-            // {
-            //     day: "Sun",
-            //     high: "19 c",
-            //     low: "8 c",
-            //     time: "10:00"
-            // }
-        ]
-    }
-
-    componentDidMount() {
-        axios.get('https://jr-weather-api.herokuapp.com/api/weather?city=brisbane&cc=au')
-            .then(response => {
-                const rawforecasts = response.data.data.forecast.slice(0,10);
-                const forecasts = rawforecasts.map(rawforecast => {
-                    const date = new Date(rawforecast.time * 1000);
-                    const day = format(date, 'EEE');
-                    const time = format(date, 'HH:mm');
-                    return {
-                        ...rawforecast,
-                        day,
-                        time
-                    }
-                })
-                this.setState({ forecasts });
-            })
-    }
-
+   
 	render() {
-       
+        const { limit } = this.props;
+        const forecasts = this.props.forecasts.slice(0, limit);
 
         return (
             <section className="weather-forecast">
                 <div className="forecast__switch">
-                    <button className="forecast__switch_0 switch-active">
+                    <button 
+                        className={`forecast__switch_0 ${limit === 5 ? ' switch-active' : ''}`}
+                        onClick={() => this.props.handleChangeLimit(5)}
+                    >
                         5 items
                     </button>
-                    <button className="forecast__switch_1" >
+                    <button 
+                        className={`forecast__switch_1${limit === 10 ? ' switch-active' : ''}`}
+                        onClick={() => this.props.handleChangeLimit(10)}
+                    >
                         10 items
                     </button>
                 </div>
                 {
                     
-                    this.state.forecasts.map(forecast => (
-                        <ForecastRow
-                            key = {forecast.day + forecast.time}
-                            day = {forecast.day}
-                            high = {forecast.maxCelsius}
-                            low = {forecast.minCelsius}
-                            time = {forecast.time} 
-                        />
-                    ))
+                    forecasts.map(forecast => {
+                        const date = new Date(forecast.time * 1000);
+                        const day = format(date, 'EEE');
+                        const time = format(date, 'HH:mm');
+
+                        return (
+                            <ForecastRow
+                                key = {forecast.time * 1000}
+                                day = {day}
+                                high = {forecast.maxCelsius}
+                                low = {forecast.minCelsius}
+                                time = {time} 
+                            />
+                        );
+                    })
+                        
+                    
                 }
             </section>
         );
